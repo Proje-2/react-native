@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
+import * as Speech from 'expo-speech';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -29,7 +30,7 @@ function App() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
-      base64: true, // needed for OCR API
+      base64: true,
     });
 
     if (!result.canceled) {
@@ -57,18 +58,20 @@ function App() {
 
   const recognizeText = async () => {
     if (!image || !image.base64) return;
-  
+
     try {
-      const res = await fetch('http://172.16.0.103:3000/ocr', {
+      const res = await fetch('http://10.40.126.99:3000/ocr', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ image: `data:image/jpeg;base64,${image.base64}` })
       });
-  
+
       const data = await res.json();
       if (data.text) {
+        Speech.stop(); // Eski TTS durdur
+        console.log("OCR Text:", data.text);
         setText(data.text);
       } else {
         setText('No text found');
@@ -78,7 +81,15 @@ function App() {
       setText('Error recognizing text');
     }
   };
-  
+
+  const speakText = () => {
+    const toSpeak = text || "Merhaba, OCR sonucu bulunamadı.";
+    Speech.speak(toSpeak, { language: 'tr-TR', rate: 1.0 });
+  };
+
+  const pauseSpeech = () => Speech.pause();
+
+  const resumeSpeech = () => Speech.resume();
 
   useEffect(() => {
     if (image) {
@@ -87,29 +98,53 @@ function App() {
   }, [image]);
 
   return (
-    <SafeAreaView>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+    <SafeAreaView style={styles.container}>
+      
       <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 64 }}>
-          <Text style={{ fontSize: 20 }}>Text Recognition Demo</Text>
-          <View style={{ flexDirection: 'row', marginVertical: 16 }}>
+        <View style={styles.content}>
+          <Text style={styles.title}>Text Recognition & Speech (Turkish)</Text>
+
+          <View style={styles.buttonRow}>
             <Button onPress={pickImage} title='Pick Image' />
-            <View style={{ width: 10 }} />
+            <View style={styles.spacer} />
             <Button onPress={openCamera} title='Open Camera' />
           </View>
 
           {image && (
             <Image
               source={{ uri: image.uri }}
-              style={{ width: 200, height: 200, resizeMode: 'contain', marginVertical: 20 }}
+              style={styles.image}
             />
           )}
 
-          <Text style={{ textAlign: 'justify', fontSize: 16, paddingHorizontal: 16 }}>{text}</Text>
+          <Text style={styles.textResult}>{text}</Text>
+
+          <Button onPress={speakText} title="Speak Text (Turkish)" />
+
+          <View style={styles.buttonRow}>
+            <Button title="Pause" onPress={pauseSpeech} />
+            <View style={styles.spacer} />
+            <Button title="Resume" onPress={resumeSpeech} />
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  content: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 64,
+    paddingBottom: 100,
+  },
+  title: { fontSize: 20, marginBottom: 20 },
+  buttonRow: { flexDirection: 'row', marginVertical: 16 },
+  spacer: { width: 10 },
+  image: { width: 200, height: 200, resizeMode: 'contain', marginVertical: 20 },
+  textResult: { textAlign: 'justify', fontSize: 16, paddingHorizontal: 16, marginBottom: 20 },
+});
 
 export default App;
