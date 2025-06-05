@@ -777,7 +777,20 @@
     "@babel/parser" "^7.27.0"
     "@babel/types" "^7.27.0"
 
-"@babel/traverse--for-generate-function-map@npm:@babel/traverse@^7.25.3", "@babel/traverse@^7.25.3", "@babel/traverse@^7.25.9", "@babel/traverse@^7.26.10", "@babel/traverse@^7.26.5", "@babel/traverse@^7.26.8", "@babel/traverse@^7.27.0":
+"@babel/traverse--for-generate-function-map@npm:@babel/traverse@^7.25.3":
+  version "7.27.0"
+  resolved "https://registry.npmjs.org/@babel/traverse/-/traverse-7.27.0.tgz"
+  integrity sha512-19lYZFzYVQkkHkl4Cy4WrAVcqBkgvV2YM2TU3xG6DIwO7O3ecbDPfW3yM3bjAGcqcQHi+CCtjMR3dIEHxsd6bA==
+  dependencies:
+    "@babel/code-frame" "^7.26.2"
+    "@babel/generator" "^7.27.0"
+    "@babel/parser" "^7.27.0"
+    "@babel/template" "^7.27.0"
+    "@babel/types" "^7.27.0"
+    debug "^4.3.1"
+    globals "^11.1.0"
+
+"@babel/traverse@^7.25.3", "@babel/traverse@^7.25.9", "@babel/traverse@^7.26.10", "@babel/traverse@^7.26.5", "@babel/traverse@^7.26.8", "@babel/traverse@^7.27.0":
   version "7.27.0"
   resolved "https://registry.npmjs.org/@babel/traverse/-/traverse-7.27.0.tgz"
   integrity sha512-19lYZFzYVQkkHkl4Cy4WrAVcqBkgvV2YM2TU3xG6DIwO7O3ecbDPfW3yM3bjAGcqcQHi+CCtjMR3dIEHxsd6bA==
@@ -1301,6 +1314,11 @@
   version "1.5.2"
   resolved "https://registry.npmjs.org/@react-native-ml-kit/text-recognition/-/text-recognition-1.5.2.tgz"
   integrity sha512-zPnJrD19u4FhT0ntvtnZVEhvPym9KyZ0R+UXBYJbCT0ePL9DpMnSewBFnHy44YnXKGgbokRQXUQMMM+GOsQs7w==
+
+"@react-native-picker/picker@^2.11.0":
+  version "2.11.0"
+  resolved "https://registry.npmjs.org/@react-native-picker/picker/-/picker-2.11.0.tgz"
+  integrity sha512-QuZU6gbxmOID5zZgd/H90NgBnbJ3VV6qVzp6c7/dDrmWdX8S0X5YFYgDcQFjE3dRen9wB9FWnj2VVdPU64adSg==
 
 "@react-native/assets-registry@0.76.9":
   version "0.76.9"
@@ -2594,7 +2612,7 @@ expo-asset@~11.0.5:
 
 expo-camera@~16.0.18:
   version "16.0.18"
-  resolved "https://registry.yarnpkg.com/expo-camera/-/expo-camera-16.0.18.tgz#5b54dc1a929c12732c585b137b04cef2b01dee3b"
+  resolved "https://registry.npmjs.org/expo-camera/-/expo-camera-16.0.18.tgz"
   integrity sha512-NP5u2yyc+wZc9GdUXH+jcEytyXZwBnHxItMwXoZQQxi4wgltwvs4XfSWjBtRZe1LngnhpBfPyPJV0aShjWlLDg==
   dependencies:
     invariant "^2.2.4"
@@ -2623,12 +2641,12 @@ expo-font@~13.0.4:
 
 expo-image-loader@~5.0.0:
   version "5.0.0"
-  resolved "https://registry.yarnpkg.com/expo-image-loader/-/expo-image-loader-5.0.0.tgz#4f58a21ab26e40d6fccc211b664fd9fe21a5dcb8"
+  resolved "https://registry.npmjs.org/expo-image-loader/-/expo-image-loader-5.0.0.tgz"
   integrity sha512-Eg+5FHtyzv3Jjw9dHwu2pWy4xjf8fu3V0Asyy42kO+t/FbvW/vjUixpTjPtgKQLQh+2/9Nk4JjFDV6FwCnF2ZA==
 
 expo-image-picker@~16.0.6:
   version "16.0.6"
-  resolved "https://registry.yarnpkg.com/expo-image-picker/-/expo-image-picker-16.0.6.tgz#ab1378711813a8c857ee577a97ce43e31ea84ab5"
+  resolved "https://registry.npmjs.org/expo-image-picker/-/expo-image-picker-16.0.6.tgz"
   integrity sha512-HN4xZirFjsFDIsWFb12AZh19fRzuvZjj2ll17cGr19VNRP06S/VPQU3Tdccn5vwUzQhOBlLu704CnNm278boiQ==
   dependencies:
     expo-image-loader "~5.0.0"
@@ -2661,7 +2679,7 @@ expo-modules-core@2.2.3:
 
 expo-speech@~13.0.1:
   version "13.0.1"
-  resolved "https://registry.yarnpkg.com/expo-speech/-/expo-speech-13.0.1.tgz#f49fc2c8a73f9bada030e52fc86a235cd3963f4a"
+  resolved "https://registry.npmjs.org/expo-speech/-/expo-speech-13.0.1.tgz"
   integrity sha512-J7tvFzORsFpIKihMnayeY5lCPc15giDrlN+ws2uUNo0MvLv1HCYEu/5p3+aMmZXXsY5I1QlconD4CwRWw3JFig==
 
 expo-status-bar@~2.0.1:
@@ -3567,7 +3585,7 @@ lightningcss-win32-arm64-msvc@1.27.0:
 
 lightningcss-win32-x64-msvc@1.27.0:
   version "1.27.0"
-  resolved "https://registry.npmjs.org/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.27.0.tgz"
+  resolved "https://registry.yarnpkg.com/lightningcss-win32-x64-msvc/-/lightningcss-win32-x64-msvc-1.27.0.tgz#237d0dc87d9cdc9cf82536bcbc07426fa9f3f422"
   integrity sha512-/OJLj94Zm/waZShL8nB5jsNj3CfNATLCTyFxZyouilfTmSoLDX7VlVAmhPHoZWVFp4vdmoiEbPEYC8HID3m6yw==
 
 lightningcss@~1.27.0:
@@ -4960,7 +4978,16 @@ stream-buffers@2.2.x, stream-buffers@~2.2.0:
   resolved "https://registry.npmjs.org/stream-buffers/-/stream-buffers-2.2.0.tgz"
   integrity sha512-uyQK/mx5QjHun80FLJTfaWE7JtwfRMKBLkMne6udYOmvH0CawotVa7TfgYHzAnpphn4+TweIx1QKMnRIbipmUg==
 
-"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0":
+  version "4.2.3"
+  resolved "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
+
+string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.npmjs.org/string-width/-/string-width-4.2.3.tgz"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -4978,7 +5005,7 @@ string-width@^5.0.1, string-width@^5.1.2:
     emoji-regex "^9.2.2"
     strip-ansi "^7.0.1"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
   version "6.0.1"
   resolved "https://registry.npmjs.org/strip-ansi/-/strip-ansi-6.0.1.tgz"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -4991,6 +5018,13 @@ strip-ansi@^5.2.0:
   integrity sha512-DuRs1gKbBqsMKIZlrffwlug8MHkcnpjs5VPmL1PAh+mA30U0DTotfDZ0d2UUsXpPmPmMMJ6W773MaA3J+lbiWA==
   dependencies:
     ansi-regex "^4.1.0"
+
+strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.npmjs.org/strip-ansi/-/strip-ansi-6.0.1.tgz"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
 
 strip-ansi@^7.0.1:
   version "7.1.0"
@@ -5396,7 +5430,16 @@ wonka@^6.3.2:
   resolved "https://registry.npmjs.org/wonka/-/wonka-6.3.5.tgz"
   integrity sha512-SSil+ecw6B4/Dm7Pf2sAshKQ5hWFvfyGlfPbEd6A14dOH6VDjrmbY86u6nZvy9omGwwIPFR8V41+of1EezgoUw==
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-7.0.0.tgz"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
+wrap-ansi@^7.0.0:
   version "7.0.0"
   resolved "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-7.0.0.tgz"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
