@@ -2,19 +2,18 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   Button,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   View,
   Image,
   Alert,
   Vibration,
+  TouchableWithoutFeedback,
   useColorScheme,
 } from 'react-native';
-
 import * as ImagePicker from 'expo-image-picker';
 import * as Speech from 'expo-speech';
 
-function App() {
+export default function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   const [image, setImage] = useState(null);
@@ -26,6 +25,7 @@ function App() {
   const wordsRef = useRef([]);
   const speakIndexRef = useRef(0);
   const konusmaHiziRef = useRef(konusmaHizi);
+  const lastTap = useRef(null);
 
   useEffect(() => {
     konusmaHiziRef.current = konusmaHizi;
@@ -35,10 +35,23 @@ function App() {
     speakIndexRef.current = speakIndex;
   }, [speakIndex]);
 
+  const handleDoubleTap = () => {
+    const now = Date.now();
+    if (lastTap.current && (now - lastTap.current) < 300) {
+      if (isSpeaking) {
+        Speech.stop();
+        setIsSpeaking(false);
+      } else {
+        speakFromIndex(speakIndexRef.current, konusmaHiziRef.current);
+      }
+    }
+    lastTap.current = now;
+  };
+
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
-      Alert.alert('Permission needed', 'Permission to access media library is required!');
+      Alert.alert('İzin gerekli', 'Galeriye erişim izni gerekli!');
       return;
     }
 
@@ -59,7 +72,7 @@ function App() {
   const openCamera = async () => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissionResult.granted) {
-      Alert.alert('Permission needed', 'Permission to access camera is required!');
+      Alert.alert('İzin gerekli', 'Kameraya erişim izni gerekli!');
       return;
     }
 
@@ -81,7 +94,7 @@ function App() {
     if (!image || !image.base64) return;
 
     try {
-      const res = await fetch('http://192.168.1.105:3000/ocr', {
+      const res = await fetch('http://192.168.175.89:3000/ocr', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: `data:image/jpeg;base64,${image.base64}` }),
@@ -95,13 +108,19 @@ function App() {
         setIsSpeaking(false);
         wordsRef.current = data.text.split(/\s+/);
       } else {
-        setText('');
+        const errorMessage = 'Metin algılanamadı.';
+        setText(errorMessage);
         Vibration.vibrate([0, 250, 250, 250]);
+        Speech.stop();
+        Speech.speak(errorMessage, { language: 'tr-TR' });
       }
     } catch (error) {
       console.error('Text recognition error:', error);
-      setText('');
+      const errorMessage = 'Metin algılanamadı.';
+      setText(errorMessage);
       Vibration.vibrate([0, 250, 250, 250]);
+      Speech.stop();
+      Speech.speak(errorMessage, { language: 'tr-TR' });
     }
   };
 
@@ -138,24 +157,11 @@ function App() {
   };
 
   const speakText = () => {
-    if (!text) {
+    if (!text || text === 'Metin algılanamadı.') {
       Speech.speak('Merhaba, OCR sonucu bulunamadı.', { language: 'tr-TR' });
       return;
     }
     speakFromIndex(speakIndexRef.current, konusmaHiziRef.current);
-  };
-
-  const pauseSpeech = () => {
-    if (isSpeaking) {
-      Speech.stop();
-      setIsSpeaking(false);
-    }
-  };
-
-  const resumeSpeech = () => {
-    if (!isSpeaking) {
-      speakFromIndex(speakIndexRef.current, konusmaHiziRef.current);
-    }
   };
 
   const toggleSpeechRate = () => {
@@ -210,51 +216,63 @@ function App() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
-        <View style={styles.content}>
-          <Button onPress={pickImage} title="Fotoğraf Yükle" />
-          <View style={{ height: 10 }} />
-          <Button onPress={openCamera} title="Fotoğraf Çek" />
-          {image && <Image source={{ uri: image.uri }} style={styles.image} />}
-
-          {text !== '' && (
+    <TouchableWithoutFeedback onPressIn={handleDoubleTap}>
+      <SafeAreaView style={styles.container}>
+        <View style={[styles.content, image && styles.contentWithImage]}>
+          {!image && (
             <>
+              <Button onPress={pickImage} title="Fotoğraf Yükle" />
+              <View style={{ height: 10 }} />
+              <Button onPress={openCamera} title="Fotoğraf Çek" />
+            </>
+          )}
+
+          {image && (
+            <>
+              <View style={styles.imageWrapper}>
+                <Image source={{ uri: image.uri }} style={styles.image} />
+              </View>
               <Button onPress={speakText} title="Metni Seslendir" />
               <View style={styles.buttonRow}>
                 <Button title="⏪ -10s" onPress={rewind10s} />
                 <View style={{ width: 10 }} />
                 <Button title="⏩ +10s" onPress={forward10s} />
               </View>
-
               <View style={styles.buttonRow}>
-                <Button title={isSpeaking ? 'Duraklat' : 'Devam Ettir'} onPress={isSpeaking ? pauseSpeech : resumeSpeech} />
-                <View style={{ width: 10 }} />
                 <Button title={`Hız: ${konusmaHizi.toFixed(2)}`} onPress={toggleSpeechRate} />
               </View>
             </>
           )}
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 40,
-    paddingBottom: 100,
+    paddingBottom: 40,
+  },
+  contentWithImage: {
+    justifyContent: 'flex-start',
+    paddingTop: 40,
+  },
+  imageWrapper: {
+    marginVertical: 20,
+    alignItems: 'center',
   },
   image: {
-    width: 200,
-    height: 200,
+    width: 220,
+    height: 220,
     resizeMode: 'contain',
-    marginVertical: 20,
   },
-  buttonRow: { flexDirection: 'row', marginVertical: 16, justifyContent: 'center' },
+  buttonRow: {
+    flexDirection: 'row',
+    marginVertical: 12,
+    justifyContent: 'center',
+  },
 });
-
-export default App;
