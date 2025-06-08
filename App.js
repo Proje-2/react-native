@@ -35,10 +35,17 @@ function App() {
     speakIndexRef.current = speakIndex;
   }, [speakIndex]);
 
+  useEffect(() => {
+    Speech.speak(
+      "Uygulamaya hoş geldiniz. Fotoğraf yüklemek için ekranın ortasına çift dokunun. Metni seslendirmek için sağ alt butona dokunun.",
+      { language: 'tr-TR' }
+    );
+  }, []);
+
   const pickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
-      Alert.alert('Permission needed', 'Permission to access media library is required!');
+      Alert.alert('İzin gerekli', 'Galeriye erişim izni gereklidir!');
       return;
     }
 
@@ -53,13 +60,14 @@ function App() {
       setSpeakIndex(0);
       setText('');
       setIsSpeaking(false);
+      Speech.speak("Fotoğraf başarıyla yüklendi", { language: 'tr-TR' });
     }
   };
 
   const openCamera = async () => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissionResult.granted) {
-      Alert.alert('Permission needed', 'Permission to access camera is required!');
+      Alert.alert('İzin gerekli', 'Kameraya erişim izni gereklidir!');
       return;
     }
 
@@ -74,6 +82,7 @@ function App() {
       setSpeakIndex(0);
       setText('');
       setIsSpeaking(false);
+      Speech.speak("Fotoğraf başarıyla çekildi", { language: 'tr-TR' });
     }
   };
 
@@ -88,27 +97,31 @@ function App() {
       });
 
       const data = await res.json();
-      if (data.text) {
+      if (data.text && data.text.trim().length > 0) {
         Speech.stop();
         setText(data.text);
         setSpeakIndex(0);
         setIsSpeaking(false);
         wordsRef.current = data.text.split(/\s+/);
+        Speech.speak("Metin algılandı", { language: 'tr-TR' });
       } else {
         setText('');
+        wordsRef.current = [];
+        setSpeakIndex(0);
+        setIsSpeaking(false);
         Vibration.vibrate([0, 250, 250, 250]);
+        Speech.speak("Metin algılanamadı. Lütfen tekrar deneyin.", { language: 'tr-TR' });
       }
     } catch (error) {
       console.error('Text recognition error:', error);
       setText('');
       Vibration.vibrate([0, 250, 250, 250]);
+      Speech.speak("Bir hata oluştu. Lütfen tekrar deneyin.", { language: 'tr-TR' });
     }
   };
 
   useEffect(() => {
-    if (image) {
-      recognizeText();
-    }
+    if (image) recognizeText();
   }, [image]);
 
   const speakFromIndex = (index, rate = konusmaHiziRef.current) => {
@@ -131,15 +144,14 @@ function App() {
         setIsSpeaking(false);
         setSpeakIndex(words.length);
       },
-      onStopped: () => {
-        setIsSpeaking(false);
-      },
+      onStopped: () => setIsSpeaking(false),
     });
   };
 
   const speakText = () => {
-    if (!text) {
-      Speech.speak('Merhaba, OCR sonucu bulunamadı.', { language: 'tr-TR' });
+    if (!text || text.trim() === '') {
+      Vibration.vibrate([0, 250, 250, 250]);
+      Speech.speak('Metin algılanamadı.', { language: 'tr-TR' });
       return;
     }
     speakFromIndex(speakIndexRef.current, konusmaHiziRef.current);
@@ -159,19 +171,13 @@ function App() {
   };
 
   const toggleSpeechRate = () => {
-    let newRate;
-    if (konusmaHizi === 1.0) newRate = 1.25;
-    else if (konusmaHizi === 1.25) newRate = 1.5;
-    else newRate = 1.0;
-
+    let newRate = konusmaHizi === 1.0 ? 1.25 : konusmaHizi === 1.25 ? 1.5 : 1.0;
     setKonusmaHizi(newRate);
     konusmaHiziRef.current = newRate;
 
     if (isSpeaking) {
       Speech.stop();
-      setTimeout(() => {
-        speakFromIndex(speakIndexRef.current, newRate);
-      }, 50);
+      setTimeout(() => speakFromIndex(speakIndexRef.current, newRate), 50);
     }
   };
 
@@ -179,16 +185,13 @@ function App() {
     const words = wordsRef.current;
     if (words.length === 0) return;
 
-    const avgWordsPerSec = 2;
-    let newIndex = Math.min(speakIndexRef.current + 10 * avgWordsPerSec, words.length - 1);
+    let newIndex = Math.min(speakIndexRef.current + 20, words.length - 1);
     setSpeakIndex(newIndex);
     speakIndexRef.current = newIndex;
 
     if (isSpeaking) {
       Speech.stop();
-      setTimeout(() => {
-        speakFromIndex(newIndex, konusmaHiziRef.current);
-      }, 50);
+      setTimeout(() => speakFromIndex(newIndex, konusmaHiziRef.current), 50);
     }
   };
 
@@ -196,16 +199,13 @@ function App() {
     const words = wordsRef.current;
     if (words.length === 0) return;
 
-    const avgWordsPerSec = 2;
-    let newIndex = Math.max(speakIndexRef.current - 10 * avgWordsPerSec, 0);
+    let newIndex = Math.max(speakIndexRef.current - 20, 0);
     setSpeakIndex(newIndex);
     speakIndexRef.current = newIndex;
 
     if (isSpeaking) {
       Speech.stop();
-      setTimeout(() => {
-        speakFromIndex(newIndex, konusmaHiziRef.current);
-      }, 50);
+      setTimeout(() => speakFromIndex(newIndex, konusmaHiziRef.current), 50);
     }
   };
 
@@ -216,8 +216,14 @@ function App() {
           <Button onPress={pickImage} title="Fotoğraf Yükle" />
           <View style={{ height: 10 }} />
           <Button onPress={openCamera} title="Fotoğraf Çek" />
-          {image && <Image source={{ uri: image.uri }} style={styles.image} />}
-
+          {image && (
+            <Image
+              source={{ uri: image.uri }}
+              style={styles.image}
+              accessible
+              accessibilityLabel="Yüklenen fotoğraf"
+            />
+          )}
           {text !== '' && (
             <>
               <Button onPress={speakText} title="Metni Seslendir" />
@@ -226,7 +232,6 @@ function App() {
                 <View style={{ width: 10 }} />
                 <Button title="⏩ +10s" onPress={forward10s} />
               </View>
-
               <View style={styles.buttonRow}>
                 <Button title={isSpeaking ? 'Duraklat' : 'Devam Ettir'} onPress={isSpeaking ? pauseSpeech : resumeSpeech} />
                 <View style={{ width: 10 }} />
