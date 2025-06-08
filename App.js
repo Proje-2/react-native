@@ -81,7 +81,7 @@ function App() {
     if (!image || !image.base64) return;
 
     try {
-      const res = await fetch('http://192.168.1.105:3000/ocr', {
+      const res = await fetch('https://backend-vhyh.onrender.com/ocr', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: `data:image/jpeg;base64,${image.base64}` }),
