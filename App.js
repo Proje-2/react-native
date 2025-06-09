@@ -182,27 +182,44 @@ function App() {
     if (image) recognizeText();
   }, [image]);
 
-  const speakFromIndex = (index, rate = konusmaHiziRef.current) => {
-    const words = wordsRef.current;
-    if (words.length === 0 || index >= words.length) {
-      setIsSpeaking(false);
-      return;
+ const speakFromIndex = (index, rate = konusmaHiziRef.current) => {
+  const words = wordsRef.current;
+  if (words.length === 0 || index >= words.length) {
+    setIsSpeaking(false);
+    return;
+  }
+
+  // '?' işaretine kadar olan kısmı oku
+  let speakUntilIndex = index;
+  let textToSpeak = '';
+  for (let i = index; i < words.length; i++) {
+    textToSpeak += words[i] + ' ';
+    speakUntilIndex = i + 1;
+    if (words[i].includes('?')) {
+      break;
     }
-    const toSpeak = words.slice(index).join(' ');
-    setIsSpeaking(true);
-    setSpeakIndex(index);
-    speakIndexRef.current = index;
-    Speech.stop();
-    Speech.speak(toSpeak, {
-      language: 'tr-TR',
-      rate,
-      onDone: () => {
+  }
+
+  setIsSpeaking(true);
+  setSpeakIndex(speakUntilIndex);
+  speakIndexRef.current = speakUntilIndex;
+
+  Speech.stop();
+  Speech.speak(textToSpeak.trim(), {
+    language: 'tr-TR',
+    rate,
+    onDone: () => {
+      // '?' varsa dur, yoksa devam et
+      if (textToSpeak.includes('?')) {
         setIsSpeaking(false);
-        setSpeakIndex(words.length);
-      },
-      onStopped: () => setIsSpeaking(false),
-    });
-  };
+      } else {
+        speakFromIndex(speakUntilIndex, rate);
+      }
+    },
+    onStopped: () => setIsSpeaking(false),
+  });
+};
+
 
   const speakText = () => {
     if (!text || text.trim() === '') {
