@@ -26,7 +26,7 @@ export default function HomeScreen() {
   const navigation = useNavigation();
 
   const welcomeText = `Hoş geldiniz. Kayıtlı fotoğraflar yüklendi. 
-  Ekranın sağına dokununca ileri, soluna dokununca geri. 
+  Ekranın sağına dokununca ileri, soluna dokununca geri gider,
   Çift tıklarsanız silersiniz. Uzun basarsanız okuma ekranı açılır. 
   Yeni fotoğraf yüklemek için ekranın sol altına dokunun. 
   Fotoğraf çekmek için sağ alt köşeye dokunun. 

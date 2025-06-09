@@ -90,31 +90,31 @@ export default function OCRScreen({ route, navigation }) {
   };
 
   const pauseSpeech = () => {
-    Speech.stop();
-    setIsSpeaking(false);
-    speak("Duraklatıldı.");
-  };
+  Speech.stop();
+  setIsSpeaking(false);
+};
 
-  const resumeSpeech = () => {
-    if (!isSpeaking && ocrText) {
-      speak("Devam ediliyor.");
-      speakFromIndex(speakIndexRef.current);
-    }
-  };
 
-  const forward = () => {
-    const newIndex = Math.min(speakIndexRef.current + 20, wordsRef.current.length - 1);
-    speakIndexRef.current = newIndex;
-    speakFromIndex(newIndex);
-    speak("İleri sarıldı.");
-  };
+ const resumeSpeech = () => {
+  if (!isSpeaking && ocrText) {
+    // "Devam ediliyor" sesli komutu kaldırıldı
+    speakFromIndex(speakIndexRef.current); // Kaldığı yerden devam
+  }
+};
+
+
+ const forward = () => {
+  const newIndex = Math.min(speakIndexRef.current + 20, wordsRef.current.length - 1);
+  speakIndexRef.current = newIndex;
+  speakFromIndex(newIndex); // Uyarı sesi yok, direkt devam eder
+};
+
 
   const rewind = () => {
-    const newIndex = Math.max(speakIndexRef.current - 20, 0);
-    speakIndexRef.current = newIndex;
-    speakFromIndex(newIndex);
-    speak("Geri sarıldı.");
-  };
+  const newIndex = Math.max(speakIndexRef.current - 20, 0);
+  speakIndexRef.current = newIndex;
+  speakFromIndex(newIndex); // Uyarı sesi yok, direkt devam eder
+};
 
   const toggleSpeed = () => {
     const newRate = rate === 1.0 ? 1.25 : rate === 1.25 ? 1.5 : 1.0;
@@ -143,7 +143,7 @@ export default function OCRScreen({ route, navigation }) {
 
       speak(
         "Fotoğraf yüklendi. Metin algılanıyor. Okuma birazdan başlayacak. " +
-        "Sol üst dokunma ile hız ayarı, sağ üst ile durdur veya devam. " +
+        "Sol üst dokunma ile hız ayarını değiştirebilir, sağ üst köşeye dokunarak durdurabilir veya seslendirmeyi devam ettirebilirsiniz " +
         "Sol alt dokunma geri, sağ alt dokunma ileri sarar. " +
         "Ana sayfaya dönmek için ekranı sağa kaydırın."
       );
