@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -76,45 +76,56 @@ export default function OCRScreen({ route, navigation }) {
     if (words.length === 0 || index >= words.length) return;
 
     const toSpeak = words.slice(index).join(' ');
-    setIsSpeaking(true);
     setSpeakIndex(index);
     speakIndexRef.current = index;
 
     Speech.stop();
+
+    let spokenCount = 0;
+
     Speech.speak(toSpeak, {
       language: 'tr-TR',
       rate,
+      onStart: () => setIsSpeaking(true),
+      onBoundary: ({ charIndex }) => {
+        const partial = toSpeak.slice(0, charIndex);
+        spokenCount = partial.trim().split(/\s+/).length;
+        speakIndexRef.current = index + spokenCount;
+      },
       onDone: () => setIsSpeaking(false),
       onStopped: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false),
     });
   };
 
-  const pauseSpeech = () => {
-  Speech.stop();
-  setIsSpeaking(false);
-};
+  const pauseSpeech = async () => {
+    Speech.stop();
+    const stillSpeaking = await Speech.isSpeakingAsync();
+    if (!stillSpeaking) setIsSpeaking(false);
+  };
 
+  const resumeSpeech = async () => {
+    const stillSpeaking = await Speech.isSpeakingAsync();
+    if (!stillSpeaking && ocrText) {
+      speakFromIndex(speakIndexRef.current);
+    }
+  };
 
- const resumeSpeech = () => {
-  if (!isSpeaking && ocrText) {
-    // "Devam ediliyor" sesli komutu kaldırıldı
-    speakFromIndex(speakIndexRef.current); // Kaldığı yerden devam
-  }
-};
+  const forward = async () => {
+    await pauseSpeech();
+    const newIndex = Math.min(speakIndexRef.current + 20, wordsRef.current.length - 1);
+    speakIndexRef.current = newIndex;
+    setIsSpeaking(true);
+    speakFromIndex(newIndex);
+  };
 
-
- const forward = () => {
-  const newIndex = Math.min(speakIndexRef.current + 20, wordsRef.current.length - 1);
-  speakIndexRef.current = newIndex;
-  speakFromIndex(newIndex); // Uyarı sesi yok, direkt devam eder
-};
-
-
-  const rewind = () => {
-  const newIndex = Math.max(speakIndexRef.current - 20, 0);
-  speakIndexRef.current = newIndex;
-  speakFromIndex(newIndex); // Uyarı sesi yok, direkt devam eder
-};
+  const rewind = async () => {
+    await pauseSpeech();
+    const newIndex = Math.max(speakIndexRef.current - 20, 0);
+    speakIndexRef.current = newIndex;
+    setIsSpeaking(true);
+    speakFromIndex(newIndex);
+  };
 
   const toggleSpeed = () => {
     const newRate = rate === 1.0 ? 1.25 : rate === 1.25 ? 1.5 : 1.0;
@@ -143,9 +154,10 @@ export default function OCRScreen({ route, navigation }) {
 
       speak(
         "Fotoğraf yüklendi. Metin algılanıyor. Okuma birazdan başlayacak. " +
-        "Sol üst dokunma ile hız ayarını değiştirebilir, sağ üst köşeye dokunarak durdurabilir veya seslendirmeyi devam ettirebilirsiniz " +
+        "Sol üst dokunma ile hız ayarını değiştirebilir, sağ üst köşeye dokunarak durdurabilir veya seslendirmeyi devam ettirebilirsiniz. " +
         "Sol alt dokunma geri, sağ alt dokunma ileri sarar. " +
-        "Ana sayfaya dönmek için ekranı sağa kaydırın."
+        "Ana sayfaya dönmek için ekranı sağa kaydırın. " 
+        
       );
 
       recognizeText();
@@ -232,11 +244,6 @@ const styles = StyleSheet.create({
   imageWrapper: {
     alignItems: 'center',
     marginVertical: 10,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
   },
   image: {
     width: width * 0.9,
